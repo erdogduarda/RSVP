@@ -1,0 +1,245 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="light">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>FlashRead — RSVP Reader</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;700&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="styles.css" />
+</head>
+<body>
+<div id="app">
+
+  <!-- ═══ HEADER ═══ -->
+  <header class="header">
+    <div class="logo">
+      <span class="logo-bolt">⚡</span>
+      <span class="logo-text">FlashRead</span>
+    </div>
+    <div class="header-right">
+      <button id="themeBtn" class="icon-btn" title="Toggle theme">
+        <span id="themeIcon">☀</span>
+      </button>
+      <button id="settingsBtn" class="icon-btn" title="Settings (S)">
+        <span>⚙</span>
+      </button>
+    </div>
+  </header>
+
+  <!-- ═══ MAIN ═══ -->
+  <main>
+
+    <!-- UPLOAD VIEW -->
+    <div id="uploadView" class="upload-view">
+      <div class="upload-card">
+        <div id="dropzone" class="dropzone">
+          <div class="dropzone-inner">
+            <div class="drop-icon">📄</div>
+            <h2 class="drop-title">Drop your PDF or TXT file</h2>
+            <p class="drop-sub">Drag &amp; drop or click to browse</p>
+            <button class="btn btn-primary" id="browseBtn">Browse Files</button>
+            <input type="file" id="fileInput" accept=".pdf,.txt" hidden />
+          </div>
+        </div>
+        <div class="divider"><span>or paste text</span></div>
+        <div class="text-paste-area">
+          <textarea id="pasteText" placeholder="Paste any text here and click Load…" rows="5"></textarea>
+          <button class="btn btn-secondary" id="loadPasteBtn">Load Text</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- READER VIEW -->
+    <div id="readerView" class="reader-view hidden">
+
+      <!-- Meta bar -->
+      <div class="meta-bar">
+        <span class="meta-item" id="metaFile">—</span>
+        <span class="meta-sep">|</span>
+        <span class="meta-item" id="metaWords">0 words</span>
+        <span class="meta-sep">|</span>
+        <span class="meta-item" id="metaTime">— remaining</span>
+        <button class="btn btn-ghost btn-xs hidden" id="btnPageNav">📄 Pages</button>
+        <button class="btn btn-ghost btn-xs" id="closeReader">✕ New</button>
+      </div>
+
+      <!-- RSVP Stage -->
+      <div class="rsvp-stage">
+        <div class="rsvp-box fs-large" id="rsvpBox">
+          <div class="orp-guide top"    id="guideTop"></div>
+          <div class="orp-guide bottom" id="guideBottom"></div>
+          <div class="rsvp-word" id="rsvpWord">
+            <span class="part-before" id="partBefore"></span>
+            <span class="part-orp"    id="partOrp">●</span>
+            <span class="part-after"  id="partAfter"></span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Progress -->
+      <div class="progress-wrap">
+        <div class="progress-bar" id="progressBar">
+          <div class="progress-fill"  id="progressFill"  style="width:0%"></div>
+          <div class="progress-thumb" id="progressThumb" style="left:0%"></div>
+        </div>
+        <div class="progress-labels">
+          <span id="lblElapsed">0:00</span>
+          <span id="lblTotal">0:00</span>
+        </div>
+      </div>
+
+      <!-- Controls -->
+      <div class="ctrl-row">
+        <div class="ctrl-group playback-group">
+          <button class="ctrl-btn sm" id="btnPrev"    title="Prev word  ←">⏮</button>
+          <button class="ctrl-btn sm" id="btnRewind"  title="−10 words  [">⏪</button>
+          <button class="ctrl-btn lg" id="btnPlay"    title="Play / Pause  Space">▶</button>
+          <button class="ctrl-btn sm" id="btnForward" title="+10 words  ]">⏩</button>
+          <button class="ctrl-btn sm" id="btnNext"    title="Next word  →">⏭</button>
+        </div>
+
+        <div class="ctrl-group speed-group">
+          <button class="preset-btn" data-wpm="100">100</button>
+          <button class="preset-btn" data-wpm="200">200</button>
+          <button class="preset-btn" data-wpm="300">300</button>
+          <button class="preset-btn" data-wpm="500">500</button>
+          <input type="range" id="speedSlider" min="60" max="1000" value="250" step="10" />
+          <span class="speed-lbl" id="speedLbl">250 <small>wpm</small></span>
+        </div>
+      </div>
+
+      <!-- Keyboard Hints -->
+      <div class="kbd-hints">
+        <span><kbd>Space</kbd> play/pause</span>
+        <span><kbd>←</kbd> <kbd>→</kbd> word</span>
+        <span><kbd>[</kbd> <kbd>]</kbd> ±10 words</span>
+        <span><kbd>+</kbd> <kbd>−</kbd> speed</span>
+        <span><kbd>S</kbd> settings</span>
+      </div>
+
+    </div><!-- /readerView -->
+
+  </main>
+</div><!-- /app -->
+
+<!-- ═══ PAGE NAV PANEL ═══ -->
+<div id="pageNavOverlay" class="overlay hidden"></div>
+<aside id="pageNavPanel" class="page-nav-panel hidden">
+  <div class="pn-header">
+    <div class="pn-header-left">
+      <h3>Pages</h3>
+      <span class="pn-count" id="pnCount"></span>
+    </div>
+    <button class="icon-btn" id="closePageNav">✕</button>
+  </div>
+  <div class="pn-hint">Click a page to jump to it</div>
+  <div class="pn-body" id="pageNavBody"></div>
+</aside>
+
+<!-- ═══ SETTINGS PANEL ═══ -->
+<div id="settingsOverlay" class="overlay hidden"></div>
+<aside id="settingsPanel" class="settings-panel hidden">
+  <div class="sp-header">
+    <h3>Settings</h3>
+    <button class="icon-btn" id="closeSettings">✕</button>
+  </div>
+  <div class="sp-body">
+
+    <div class="sp-section">
+      <h4>Display</h4>
+      <div class="sp-row">
+        <label>Font Size</label>
+        <div class="seg-ctrl" id="fontSizeCtrl">
+          <button data-val="small">S</button>
+          <button data-val="medium">M</button>
+          <button data-val="large" class="active">L</button>
+          <button data-val="xlarge">XL</button>
+        </div>
+      </div>
+      <div class="sp-row">
+        <label>Theme</label>
+        <div class="seg-ctrl" id="themeCtrl">
+          <button data-val="dark" class="active">Dark</button>
+          <button data-val="light">Light</button>
+        </div>
+      </div>
+      <div class="sp-row">
+        <label>Focus Point <span class="badge">ORP</span></label>
+        <label class="toggle">
+          <input type="checkbox" id="toggleORP" checked />
+          <span class="track"></span>
+        </label>
+      </div>
+      <div class="sp-row">
+        <label>Words per Flash</label>
+        <div class="seg-ctrl" id="chunkCtrl">
+          <button data-val="1" class="active">1</button>
+          <button data-val="2">2</button>
+          <button data-val="3">3</button>
+        </div>
+      </div>
+    </div>
+
+    <div class="sp-section">
+      <h4>Reading</h4>
+      <div class="sp-row">
+        <label>Pause on sentence end</label>
+        <label class="toggle">
+          <input type="checkbox" id="toggleSentPause" checked />
+          <span class="track"></span>
+        </label>
+      </div>
+      <div class="sp-row">
+        <label>Slow on long words</label>
+        <label class="toggle">
+          <input type="checkbox" id="toggleLongWord" checked />
+          <span class="track"></span>
+        </label>
+      </div>
+      <div class="sp-row">
+        <label>Save reading position</label>
+        <label class="toggle">
+          <input type="checkbox" id="toggleSavePos" checked />
+          <span class="track"></span>
+        </label>
+      </div>
+    </div>
+
+    <div class="sp-section">
+      <h4>Keyboard Shortcuts</h4>
+      <div class="shortcut-list">
+        <div class="shortcut-row"><kbd>Space</kbd><span>Play / Pause</span></div>
+        <div class="shortcut-row"><kbd>←</kbd> <kbd>→</kbd><span>Prev / Next word</span></div>
+        <div class="shortcut-row"><kbd>[</kbd> <kbd>]</kbd><span>Back / Forward 10 words</span></div>
+        <div class="shortcut-row"><kbd>+</kbd> <kbd>−</kbd><span>Speed up / down 10 wpm</span></div>
+        <div class="shortcut-row"><kbd>S</kbd><span>Toggle settings</span></div>
+        <div class="shortcut-row"><kbd>Home</kbd><span>Go to beginning</span></div>
+        <div class="shortcut-row"><kbd>End</kbd><span>Go to end</span></div>
+      </div>
+    </div>
+
+    <div class="sp-section">
+      <h4>About</h4>
+      <p class="sp-about">
+        FlashRead uses <strong>Rapid Serial Visual Presentation (RSVP)</strong> to help you read faster.
+        The red letter marks the <strong>Optimal Recognition Point</strong> — the spot your brain resolves a word fastest.
+        Keeping your eyes on the marker eliminates the need to scan, dramatically increasing reading speed.
+      </p>
+    </div>
+
+  </div>
+</aside>
+
+<!-- Loading Overlay -->
+<div id="loadingOverlay" class="loading-overlay hidden">
+  <div class="loading-card">
+    <div class="spinner"></div>
+    <p id="loadingMsg">Processing…</p>
+  </div>
+</div>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js"></script>
+<script src="app.js"></script>
+</body>
+</html>
