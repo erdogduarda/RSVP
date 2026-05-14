@@ -85,18 +85,7 @@ function renderChunk(chunk) {
   el('partAfter').textContent  = '';
   el('partOrp').innerHTML      = markup || '&nbsp;';
 
-  // After rendering, shrink long words to fit
-  setTimeout(() => {
-    const box = el('rsvpBox');
-    const segments = el('partOrp').querySelectorAll('.word-segment');
-    segments.forEach(seg => {
-      seg.classList.remove('shrink');
-      // Reset font size, then check if it overflows
-      if (seg.scrollWidth > box.clientWidth * 0.98) {
-        seg.classList.add('shrink');
-      }
-    });
-  }, 0);
+  // No shrinking for long words; font size is now smaller globally
 }
 
 function showChunk(chunk) {
