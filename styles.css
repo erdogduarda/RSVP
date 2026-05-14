@@ -922,4 +922,121 @@ main {
   #speedSlider    { width: 100px; }
   .upload-card    { padding: 22px 18px; }
   .dropzone       { padding: 32px 16px; }
+  .upload-view    { padding-top: 24px; }
+  .upload-card, .settings-panel, .page-nav-panel {
+    max-width: 100vw;
+    border-radius: var(--radius-sm);
+    box-shadow: none;
+  }
+  .settings-panel, .page-nav-panel {
+    width: 100vw;
+    min-width: 0;
+    left: 0;
+    right: 0;
+    border-radius: 0;
+    border-left: none;
+    border-right: none;
+    box-shadow: none;
+  }
+  .sp-header, .pn-header {
+    padding: 14px 12px;
+  }
+  .sp-body {
+    padding: 12px 10px 20px;
+    gap: 16px;
+  }
+  .sp-row {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 6px;
+    padding: 8px 0;
+  }
+  .seg-ctrl button {
+    padding: 4px 8px;
+    font-size: 12px;
+  }
+  .shortcut-row {
+    font-size: 11px;
+  }
+  .reader-view {
+    padding-top: 8px;
+    padding-bottom: 8px;
+    min-height: unset;
+  }
+  .meta-bar {
+    flex-wrap: wrap;
+    gap: 6px;
+    padding: 8px 8px;
+    font-size: 11px;
+  }
+  .progress-wrap {
+    gap: 2px;
+  }
+  .progress-labels {
+    font-size: 10px;
+  }
+  .rsvp-stage {
+    max-width: 100vw;
+  }
+  .rsvp-box {
+    min-width: 0;
+    font-size: var(--fs-medium);
+    padding: 0 2px;
+  }
+  .rsvp-word {
+    font-size: var(--fs-medium);
+  }
+  .page-nav-panel {
+    width: 100vw;
+    min-width: 0;
+    left: 0;
+    right: 0;
+    border-radius: 0;
+    border-left: none;
+    border-right: none;
+    box-shadow: none;
+  }
+  .page-thumb-item {
+    padding: 6px;
+  }
+  .page-thumb-label {
+    font-size: 10px;
+  }
+  .loading-card {
+    padding: 18px 10px;
+    min-width: 0;
+  }
+  .spinner {
+    width: 28px;
+    height: 28px;
+  }
+  textarea {
+    min-height: 60px;
+    font-size: 13px;
+  }
+  .btn, .btn-primary, .btn-secondary, .btn-ghost {
+    font-size: 13px;
+    padding: 8px 12px;
+  }
+  .btn-xs {
+    padding: 3px 7px;
+    font-size: 11px;
+  }
+  .icon-btn {
+    width: 32px;
+    height: 32px;
+    font-size: 15px;
+  }
+}
+}
+/* Extra: Make images, videos, and iframes responsive */
+img, video, iframe {
+  max-width: 100%;
+  height: auto;
+  display: block;
+}
+
+/* Extra: Prevent horizontal scroll on small screens */
+body, html {
+  overflow-x: hidden;
 }
