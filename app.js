@@ -84,6 +84,19 @@ function renderChunk(chunk) {
   el('partBefore').textContent = '';
   el('partAfter').textContent  = '';
   el('partOrp').innerHTML      = markup || '&nbsp;';
+
+  // After rendering, shrink long words to fit
+  setTimeout(() => {
+    const box = el('rsvpBox');
+    const segments = el('partOrp').querySelectorAll('.word-segment');
+    segments.forEach(seg => {
+      seg.classList.remove('shrink');
+      // Reset font size, then check if it overflows
+      if (seg.scrollWidth > box.clientWidth * 0.98) {
+        seg.classList.add('shrink');
+      }
+    });
+  }, 0);
 }
 
 function showChunk(chunk) {
@@ -400,6 +413,10 @@ async function renderPageThumbnails(pdf) {
   body.innerHTML = '';
   var SCALE      = 0.28;
 
+  // Set max for page jump input
+  var pnJumpInput = document.getElementById('pnJumpInput');
+  if (pnJumpInput) pnJumpInput.max = pageWordRanges.length;
+
   for (var i = 0; i < pageWordRanges.length; i++) {
     var range = pageWordRanges[i];
     var item  = document.createElement('div');
@@ -524,6 +541,25 @@ function seekFromClientX(clientX) {
 
 function init() {
   applyAllSettings();
+
+  // Page number jump
+  var pnJumpInput = document.getElementById('pnJumpInput');
+  var pnJumpBtn   = document.getElementById('pnJumpBtn');
+  function jumpToPage() {
+    if (!pnJumpInput || !pnJumpInput.value) return;
+    var pageNum = parseInt(pnJumpInput.value, 10);
+    if (isNaN(pageNum) || pageNum < 1 || pageNum > pageWordRanges.length) return;
+    var range = pageWordRanges[pageNum - 1];
+    if (range) {
+      seek(range.start);
+      closePageNav();
+      pnJumpInput.value = '';
+    }
+  }
+  if (pnJumpBtn) pnJumpBtn.addEventListener('click', jumpToPage);
+  if (pnJumpInput) pnJumpInput.addEventListener('keydown', function(e) {
+    if (e.key === 'Enter') jumpToPage();
+  });
 
   el('browseBtn').addEventListener('click', function() { el('fileInput').click(); });
   el('fileInput').addEventListener('change', function(e) {
