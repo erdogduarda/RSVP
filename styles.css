@@ -28,7 +28,7 @@
 
 @media (max-width: 600px) {
   .rsvp-box, .rsvp-word {
-    font-size: var(--fs-medium);
+    font-size: clamp(28px, 4vw, 40px);
     max-width: 100vw;
   }
 }
